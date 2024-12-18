@@ -168,6 +168,10 @@
 
 	protected async void AddCalendarEventInJsonFile()
 	{
+		if (!calendarEventToAdd.IsValid())
+		{
+			return;
+		}
 		await calendarEventToAdd.AddInJsonFile();
 		RefreshBarrierGateList();
 		calendarEventToAdd = new CalendarEvent();

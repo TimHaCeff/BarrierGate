@@ -54,30 +54,28 @@ namespace BarrierGateApi.Singleton
             HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=true");
         }
 
-        public async void OpenBarrierGate(CalendarEvent eventCalendar) 
+        public async void CloseBarrierGate() 
         {
-            //eventCalendar.SetDebugDateTime(DateTime.Now); //THIS LINE IS DEBUG ONLY
-            //string request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:true, auto_off_delay:{eventCalendar.TimeToGoOpenInSeconds}}}";
-            //HttpResponseMessage? setConfigResponse = await TryGetAsync(request);
-            //HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=true");
+            HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=false");
         }
 
-        protected async Task<HttpResponseMessage?>? TryGetAsync(string endPoint) 
+        public async void CreateSchedule(CalendarEvent calendarEvent) 
+        {
+            string endPointPrefix = "/rpc/Schedule.Create?";
+            string sParams = "* * * * * *";
+        }
+
+        protected async Task<HttpResponseMessage?>? TryGetAsync(string endPoint)
         {
             try
             {
                 return await HttpClient.GetAsync(endPoint);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
                 return null;
             }
-        }
-
-        public async void CloseBarrierGate() 
-        {
-            HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=false");
         }
 
         public void ChangeHttpClientBaseAdress(Uri baseAdress)

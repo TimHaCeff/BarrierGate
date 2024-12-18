@@ -49,9 +49,6 @@ namespace BarrierGateGUI.Model
             if (this.Name is null || this.Name == String.Empty)
             { return false; }
 
-            if (this.Description is null || this.Description == String.Empty)
-            { return false; }
-
             return true;
         }
 

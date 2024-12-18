@@ -1,5 +1,7 @@
 ﻿using BarrierGateApi.Singleton;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
+using System;
 
 namespace BarrierGateApi.Models
 {
@@ -18,9 +20,9 @@ namespace BarrierGateApi.Models
 
 
         [JsonProperty("start_time")]
-        public DateTime? StartTime { get; set; }
+        public DateTime StartTime { get; set; }
         [JsonProperty("end_time")]
-        public DateTime? EndTime { get; set; }
+        public DateTime EndTime { get; set; }
 
         public CalendarEvent()
         {
@@ -39,11 +41,13 @@ namespace BarrierGateApi.Models
             this.Description = description;
         }
 
-        //public static CalendarEvent? JsonToObject(string json) 
-        //{
-        //    JsonSerializerSettings settings = new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.IsoDateFormat };
-        //    return JsonConvert.DeserializeObject<CalendarEvent>(json, settings);
-        //}
+        public float GetOpenTimeInSeconds()
+        {
+            TimeSpan dateDiffInSeconds = (this.EndDate - this.StartDate);
+            TimeSpan timeDiffInSeconds = (this.EndTime - this.StartTime);
+
+            return (float)(dateDiffInSeconds.TotalSeconds + timeDiffInSeconds.TotalSeconds);
+        }
 
         public bool IsValid()
         {

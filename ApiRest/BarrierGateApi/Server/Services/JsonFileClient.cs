@@ -9,7 +9,7 @@ namespace Server.Services
     
     public class JsonFileClient
     {
-        public string Path { get; set; } = "C:\\TIH\\BarrierGateGestion\\BarrierGateGUI\\BarrierGateGUI\\BarrierGate\\BarrierGateJson.json";
+        public string Path { get; set; } = "C:\\TIH\\BarrierGate\\ApiRest\\Json\\data.json";
     
         public void Launch() 
         {

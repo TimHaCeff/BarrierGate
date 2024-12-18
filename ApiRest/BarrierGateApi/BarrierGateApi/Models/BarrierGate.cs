@@ -72,7 +72,6 @@ namespace BarrierGateApi.Models
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.WriteLine(FileSingleton.Instance.JsonFile);
                 return false;
             }
             return true;

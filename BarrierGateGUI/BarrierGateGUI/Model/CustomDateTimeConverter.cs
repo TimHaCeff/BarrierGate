@@ -16,7 +16,6 @@ namespace BarrierGateGUI.Model
         {
             string dateString = reader.Value.ToString();
             DateTime dateTime = DateTime.Parse(dateString);
-            Console.WriteLine(dateTime);
             return DateTime.ParseExact(dateTime.ToString(_dateFormat), "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
         }
     }

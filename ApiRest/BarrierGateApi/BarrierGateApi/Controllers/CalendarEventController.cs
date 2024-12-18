@@ -39,8 +39,6 @@ namespace BarrierGateApi.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine(calendarEventToAdd);
-                Console.WriteLine("");
                 return false;
             }
         }
@@ -48,6 +46,7 @@ namespace BarrierGateApi.Controllers
         [HttpGet(nameof(this.RemoveInJsonFile))]
         public bool RemoveInJsonFile(string barrierGateParent, string calendarEventToRemove)
         {
+            Console.WriteLine("IS CALLED");
             try
             {
                 BarrierGate barrierGate = JsonConvert.DeserializeObject<BarrierGate>(barrierGateParent);
@@ -56,6 +55,7 @@ namespace BarrierGateApi.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return false;
             }
         }

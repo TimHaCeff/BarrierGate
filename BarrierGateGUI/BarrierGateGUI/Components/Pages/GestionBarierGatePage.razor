@@ -122,7 +122,6 @@
     protected BarrierGate modifiedBarrierGate = new BarrierGate();
     protected BarrierGate barrierGateToAdd = new BarrierGate();
 
-
     protected override void OnInitialized()
     {
         RefreshBarrierGateList();
@@ -134,6 +133,7 @@
     {
         BarrierGate bg = new BarrierGate();
         BarrierGateSingleton.Instance.barrierGates = await bg.GetAllFromJsonFile();
+        this.StateHasChanged();
     }
 
     protected void ModifyIsClicked(BarrierGate currentBarrierGate)

@@ -57,7 +57,6 @@ namespace BarrierGateGUI.Model
 
         public async override Task<bool> AddInJsonFile()
         {
-            Console.WriteLine(this.StartDate.ToString());
             try
             {
                 string barrierGateParent = JsonConvert.SerializeObject(BarrierGateSingleton.Instance.CurrentBarrierGate);
@@ -81,7 +80,7 @@ namespace BarrierGateGUI.Model
                 string barrierGateParent = JsonConvert.SerializeObject(BarrierGateSingleton.Instance.CurrentBarrierGate);
                 string json = JsonConvert.SerializeObject(this);
 
-                string endpoint = $"/CalendarEvent/AddInJsonFile?RemoveInJsonFile?barrierGateParent={barrierGateParent}&calendarEventToRemove={json}";
+                string endpoint = $"/CalendarEvent/RemoveInJsonFile?barrierGateParent={barrierGateParent}&calendarEventToRemove={json}";
                 HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);
             }
             catch (Exception e)
@@ -102,7 +101,7 @@ namespace BarrierGateGUI.Model
                 string jsonOfEdited = JsonConvert.SerializeObject(elementModified);
 
                 string endpoint =
-                $"/CalendarEvent/AddInJsonFile?EditInJsonFile?barrierGateParent=" +
+                $"/CalendarEvent/EditInJsonFile?barrierGateParent=" +
                 $"{barrierGateParent}&calendarEventToEdit={json}&calendarEventEdited={jsonOfEdited}";
                 HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);
             }

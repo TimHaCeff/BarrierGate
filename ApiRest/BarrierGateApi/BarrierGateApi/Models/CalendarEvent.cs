@@ -85,7 +85,7 @@ namespace BarrierGateApi.Models
             {
                 BarrierGate bg = new BarrierGate();
                 List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
-                BarrierGate currentBarrierGate = barrierGateFromJson.Where(x => x == parents[0]).FirstOrDefault();
+                BarrierGate currentBarrierGate = barrierGateFromJson.Where(x => x == parents[0] as BarrierGate).FirstOrDefault();
                 CalendarEvent calendarEvent = currentBarrierGate.CalendarEvents.Where(x => x == this).FirstOrDefault();
                 currentBarrierGate.CalendarEvents.Remove(calendarEvent);
                 string json = JsonConvert.SerializeObject(barrierGateFromJson);
@@ -106,7 +106,7 @@ namespace BarrierGateApi.Models
             {
                 BarrierGate bg = new BarrierGate();
                 List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
-                BarrierGate barrierGateToEdit = barrierGateFromJson.Where(x => x == parents[0]).FirstOrDefault();
+                BarrierGate barrierGateToEdit = barrierGateFromJson.Where(x => x == parents[0] as BarrierGate).FirstOrDefault();
                 CalendarEvent currentCalendarEvent = barrierGateToEdit.CalendarEvents.Where(x => x == this).FirstOrDefault();
 
                 currentCalendarEvent.Id = elementToUseToModified.Id;

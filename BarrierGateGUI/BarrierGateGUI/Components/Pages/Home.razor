@@ -46,17 +46,23 @@
 @code
 {
 
-    protected async override void OnInitialized()
+    protected override void OnInitialized()
     {
-        BarrierGate bg = new BarrierGate();
+        RefreshBarrierGateList();
 
         base.OnInitialized();
+    }
+
+    protected async void RefreshBarrierGateList()
+    {
+        BarrierGate bg = new BarrierGate();
+        BarrierGateSingleton.Instance.barrierGates = await bg.GetAllFromJsonFile();
+        this.StateHasChanged();
     }
 
     protected async Task BarrierGateAction(BarrierGate barrierGate, BarrierGate.BARRIERE_ENUM_STATE barriereState)
     {
         BarrierGateSingleton.Instance.SetCurrentBarrierGate(barrierGate);
-        Console.WriteLine(BarrierGateSingleton.Instance.CurrentBarrierGate.Ip);
 
         switch(barriereState)
         {

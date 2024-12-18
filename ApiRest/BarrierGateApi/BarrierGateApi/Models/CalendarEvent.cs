@@ -66,7 +66,7 @@ namespace BarrierGateApi.Models
                 BarrierGate bg = new BarrierGate();
                 List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
 
-                BarrierGate currentBG = barrierGateFromJson.Where(x => x == parents[0]).FirstOrDefault();
+                BarrierGate currentBG = barrierGateFromJson.Where(x => x == parents[0] as BarrierGate).FirstOrDefault();
                 currentBG.CalendarEvents.Add(this);
                 string json = JsonConvert.SerializeObject(barrierGateFromJson);
                 FileSingleton.Instance.JsonFile = json;

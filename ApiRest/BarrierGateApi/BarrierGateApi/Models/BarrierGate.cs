@@ -54,18 +54,16 @@ namespace BarrierGateApi.Models
         {
             try
             {
-                try
+                if (FileSingleton.Instance.JsonFile.Length > 0)
                 {
                     List<BarrierGate> barrierGateFromJson = JsonConvert.DeserializeObject<List<BarrierGate>>(FileSingleton.Instance.JsonFile);
                     barrierGateFromJson.Add(this);
                     string json = JsonConvert.SerializeObject(barrierGateFromJson);
                     FileSingleton.Instance.JsonFile = json;
                 }
-                catch (Exception ex) 
+                else
                 {
                     List<BarrierGate> list = new List<BarrierGate>();
-                    BarrierGate barrierGateFromJson = JsonConvert.DeserializeObject<BarrierGate>(FileSingleton.Instance.JsonFile);
-                    list.Add(barrierGateFromJson);
                     list.Add(this);
                     string json = JsonConvert.SerializeObject(list);
                     FileSingleton.Instance.JsonFile = json;
@@ -73,6 +71,7 @@ namespace BarrierGateApi.Models
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 Console.WriteLine(FileSingleton.Instance.JsonFile);
                 return false;
             }

@@ -8,8 +8,10 @@ namespace BarrierGateApi.Models
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("start_date")]
+        [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime StartDate { get; set; }
         [JsonProperty("end_date")]
+        [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime EndDate { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
@@ -37,6 +39,12 @@ namespace BarrierGateApi.Models
             this.Description = description;
         }
 
+        //public static CalendarEvent? JsonToObject(string json) 
+        //{
+        //    JsonSerializerSettings settings = new JsonSerializerSettings { DateFormatHandling = DateFormatHandling.IsoDateFormat };
+        //    return JsonConvert.DeserializeObject<CalendarEvent>(json, settings);
+        //}
+
         public bool IsValid()
         {
             if (this.Id is null || this.Id == String.Empty)
@@ -57,6 +65,7 @@ namespace BarrierGateApi.Models
             {
                 BarrierGate bg = new BarrierGate();
                 List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
+
                 BarrierGate currentBG = barrierGateFromJson.Where(x => x == parents[0]).FirstOrDefault();
                 currentBG.CalendarEvents.Add(this);
                 string json = JsonConvert.SerializeObject(barrierGateFromJson);

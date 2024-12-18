@@ -1,5 +1,6 @@
 ﻿using BarrierGateGUI.Singletons;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace BarrierGateGUI.Model
 {
@@ -8,28 +9,20 @@ namespace BarrierGateGUI.Model
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("start_date")]
+        [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime StartDate { get; set; }
         [JsonProperty("end_date")]
+        [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime EndDate { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
 
 
         [JsonProperty("start_time")]
-        public TimeSpan StartTime 
-        {
-            get => StartTime_DateTime.TimeOfDay; 
-            set => StartTime = value;
-        }
+        public DateTime StartTime { get; set; }
         [JsonProperty("end_time")]
-        public TimeSpan EndTime
-        {
-            get => EndTime_DateTime.TimeOfDay;
-            set => EndTime = value;
-        }
+        public DateTime EndTime { get; set; }
 
-        public DateTime StartTime_DateTime { get; set; }
-        public DateTime EndTime_DateTime { get; set; }
 
         public CalendarEvent() 
         {
@@ -64,6 +57,7 @@ namespace BarrierGateGUI.Model
 
         public async override Task<bool> AddInJsonFile()
         {
+            Console.WriteLine(this.StartDate.ToString());
             try
             {
                 string barrierGateParent = JsonConvert.SerializeObject(BarrierGateSingleton.Instance.CurrentBarrierGate);

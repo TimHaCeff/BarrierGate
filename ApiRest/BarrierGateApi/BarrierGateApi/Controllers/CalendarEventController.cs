@@ -2,6 +2,7 @@
 using BarrierGateApi.Singleton;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BarrierGateApi.Controllers
 {
@@ -9,21 +10,6 @@ namespace BarrierGateApi.Controllers
     [Route("[controller]")]
     public class CalendarEventController : ControllerBase
     {
-        //[HttpGet(nameof(NewEventCalendar))]
-        //public void NewEventCalendar(string s)
-        //{
-        //    Models.CalendarEvent newEventCalendar;
-        //    try
-        //    {
-        //        newEventCalendar = Models.CalendarEvent.ToObject(s);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return;
-        //    }
-
-        //    BarrierGateSingleton.Instance.OpenBarrierGate(newEventCalendar);
-        //}
 
         [HttpGet(nameof(this.GetAllFromOneBarrierGateFromJsonFile))]
         public string GetAllFromOneBarrierGateFromJsonFile(string barrierGateParent)
@@ -48,7 +34,7 @@ namespace BarrierGateApi.Controllers
             {
                 BarrierGate barrierGateParentObj = JsonConvert.DeserializeObject<BarrierGate>(barrierGateParent);
                 CalendarEvent calendarEvent = JsonConvert.DeserializeObject<CalendarEvent>(calendarEventToAdd);
-                return calendarEvent.AddInJsonFile([barrierGateParent]);
+                return calendarEvent.AddInJsonFile([barrierGateParentObj]);
             }
             catch (Exception ex)
             {

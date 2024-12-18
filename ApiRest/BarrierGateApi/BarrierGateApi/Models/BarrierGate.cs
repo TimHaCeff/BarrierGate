@@ -145,5 +145,13 @@ namespace BarrierGateApi.Models
             }
             return false;
         }
+
+        public override string ToString()
+        {
+            return $"" +
+                $"Id : {Id}\n" +
+                $"Ip : {Ip}\n" +
+                $"Name : {Name}\n";
+        }
     }
 }

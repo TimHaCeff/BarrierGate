@@ -80,7 +80,7 @@
 					<tr>
 						<td>Heure de début</td>
 						<td>
-							<input @bind-value="@modifiedCalendarEvent.StartTime_DateTime" type="time" placeholder="heure de début" />
+							<input @bind-value="@modifiedCalendarEvent.StartTime" type="time" placeholder="heure de début" />
 						</td>
 					</tr>
 					<tr>
@@ -93,7 +93,7 @@
 					<tr>
 						<td>Heure de fin</td>
 						<td>
-							<input @bind-value="@modifiedCalendarEvent.EndTime_DateTime" type="time" placeholder="heure de début" />
+							<input @bind-value="@modifiedCalendarEvent.EndTime" type="time" placeholder="heure de début" />
 						</td>
 					</tr>
 					<tr>
@@ -130,14 +130,14 @@
 			</td>
 
 			<td>
-				<input @bind-value="@calendarEventToAdd.StartTime_DateTime" type="time" placeholder="heure de début" />
+				<input @bind-value="@calendarEventToAdd.StartTime" type="time" placeholder="heure de début" />
 			</td>
 			<td>
 				<InputDate @bind-value="@calendarEventToAdd.StartDate" placeholder="Date de début" />
 			</td>
 
 			<td>
-				<input @bind-value="@calendarEventToAdd.EndTime_DateTime" type="time" placeholder="heure de début" />
+				<input @bind-value="@calendarEventToAdd.EndTime" type="time" placeholder="heure de début" />
 			</td>
 			<td>
 				<InputDate TValue="DateTime" @bind-value="@calendarEventToAdd.EndDate" EnableMinMax="true" Min="@calendarEventToAdd.StartDate" placeholder="Date de fin" />

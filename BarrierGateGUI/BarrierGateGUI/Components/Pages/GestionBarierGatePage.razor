@@ -1,0 +1,179 @@
+﻿@page "/GestionBarierGatePage";
+@rendermode InteractiveServer
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using Singletons;
+@using BarrierGateGUI.Model;
+
+<style>
+
+    #bottom_form_add
+    {
+    display:flex;
+    position: fixed;
+
+    bottom: 0;
+    height: 100px;
+    width: 100%;
+    background: grey;
+
+    left: 0px;
+
+    align-content: center;
+    }
+
+    #bottom_form_add > table
+    {
+    width: 100%;
+    }
+
+    #bottom_form_add > table > tr > td
+    {
+    text-align: center;
+    }
+
+    #barrier_gate_list
+    {
+    margin-bottom: 250px;
+    }
+</style>
+
+<h3>Gestion des barrières</h3>
+
+<p role="status">Current Barrier: @BarrierGateSingleton.Instance.CurrentBarrierGate?.Ip</p>
+
+<table id="barrier_gate_list">
+    @foreach(BarrierGate barrierGate in BarrierGateSingleton.Instance.barrierGates)
+    {
+        <tr>
+            <td>
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">@barrierGate.Name</h5>
+                        <a @onclick="@(() => ModifyIsClicked(barrierGate))" data-bs-toggle="modal" data-bs-target="#exampleModal" href="/GestionBarierGatePage" class="btn btn-primary">Modifier</a>
+                        <a @onclick="@(() => RemoveIsClicked(barrierGate))" href="/GestionBarierGatePage" class="btn btn-danger">Supprimmer</a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    @if (BarrierGateSingleton.Instance != null)
+                    {
+                        @BarrierGateSingleton.Instance.CurrentBarrierGate.Ip
+                    }else
+                    {
+                        <text>Veuillez sélectionner une barrière</text>
+                    }
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tr>
+                        <td>Ip</td>
+                        <td>
+                            <input @bind-value="@modifiedBarrierGate.Ip" id="modify_ip_input" placeholder="x.x.x.x"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Nom</td>
+                        <td>
+                            <input @bind-value="@modifiedBarrierGate.Name" id="modify_name_input" placeholder="Barrière 1" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button @onclick="@(() => ModifyConfirmation())" type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="bottom_form_add">
+    <table>
+        <tr>
+            <td>
+                <button @onclick="@(() => AddBarrierGateInJsonFile())" class="btn btn-primary">Add</button>
+            </td>
+            <td>
+                <input @bind-value="@barrierGateToAdd.Ip" placeholder="Ip"/>
+            </td>
+            <td>
+                <input @bind-value="@barrierGateToAdd.Name" placeholder="Name" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+@code {
+    protected BarrierGate modifiedBarrierGate = new BarrierGate();
+    protected BarrierGate barrierGateToAdd = new BarrierGate();
+
+
+    protected override void OnInitialized()
+    {
+        RefreshBarrierGateList();
+
+        base.OnInitialized();
+    }
+
+    protected async void RefreshBarrierGateList()
+    {
+        BarrierGate bg = new BarrierGate();
+        BarrierGateSingleton.Instance.barrierGates = await bg.GetAllFromJsonFile();
+    }
+
+    protected void ModifyIsClicked(BarrierGate currentBarrierGate)
+    {
+        BarrierGateSingleton.Instance.SetCurrentBarrierGate(currentBarrierGate);
+        modifiedBarrierGate.Ip = Singletons.BarrierGateSingleton.Instance.CurrentBarrierGate.Ip;
+        modifiedBarrierGate.Name = Singletons.BarrierGateSingleton.Instance.CurrentBarrierGate.Name;
+        modifiedBarrierGate.IsOpen = Singletons.BarrierGateSingleton.Instance.CurrentBarrierGate.IsOpen;
+        RefreshBarrierGateList();
+    }
+
+    protected async void ModifyConfirmation()
+    {
+        BarrierGate barrierGate = new BarrierGate(modifiedBarrierGate.Ip, modifiedBarrierGate.Name);
+
+        if (!barrierGate.IsValid())
+        {
+            return;
+        }
+
+        await BarrierGateSingleton.Instance.CurrentBarrierGate.ModifyInJsonFile(barrierGate);
+        RefreshBarrierGateList();
+    }
+
+    protected async void AddBarrierGateInJsonFile()
+    {
+        if (!barrierGateToAdd.IsValid())
+        {
+            return;
+        }
+        await barrierGateToAdd.AddInJsonFile();
+        barrierGateToAdd = new BarrierGate();
+        RefreshBarrierGateList();
+    }
+
+    protected async void RemoveIsClicked(BarrierGate barrierGate)
+    {
+        BarrierGateSingleton.Instance.SetCurrentBarrierGate(barrierGate);
+        await BarrierGateSingleton.Instance.CurrentBarrierGate.RemoveInJsonFile();
+
+        RefreshBarrierGateList();
+    }
+}

@@ -1,0 +1,72 @@
+﻿@page "/"
+@using Newtonsoft.Json;
+@using System.IO;
+@using BarrierGateGUI.Model;
+@using Singletons;
+@inject IJSRuntime JsRuntime
+@rendermode InteractiveServer
+
+<script>
+    // Fonction JavaScript personnalisée
+    function customAlert(message) {
+    alert("Custom Alert: " + message);
+    }
+</script>
+
+
+<PageTitle>Barrière</PageTitle>
+
+<h1>Barrière</h1>
+<table class="table">
+    @foreach (BarrierGate barrierGate in BarrierGateSingleton.Instance.barrierGates)
+    {
+        <tr>
+            <td>
+                <div class="dropdown">
+                    <button @onclick="@(() => BarrierGateSingleton.Instance.SetCurrentBarrierGate(barrierGate))" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @barrierGate.Name
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a @onclick="@(async() => await BarrierGateAction(barrierGate, BarrierGate.BARRIERE_ENUM_STATE.OPEN))" class="dropdown-item" href="#">Ouvrir la barrière</a>
+                        </li>
+                        <li >
+                            <a @onclick="@(async() => await BarrierGateAction(barrierGate, BarrierGate.BARRIERE_ENUM_STATE.CLOSE))" class="dropdown-item" href="#">Fermer la barrière</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/BarrierGateEventPage">Programmer un évenement</a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+
+@code
+{
+
+    protected async override void OnInitialized()
+    {
+        BarrierGate bg = new BarrierGate();
+
+        base.OnInitialized();
+    }
+
+    protected async Task BarrierGateAction(BarrierGate barrierGate, BarrierGate.BARRIERE_ENUM_STATE barriereState)
+    {
+        BarrierGateSingleton.Instance.SetCurrentBarrierGate(barrierGate);
+        Console.WriteLine(BarrierGateSingleton.Instance.CurrentBarrierGate.Ip);
+
+        switch(barriereState)
+        {
+            case Model.BarrierGate.BARRIERE_ENUM_STATE.OPEN:
+                BarrierGateSingleton.Instance.CurrentBarrierGate.OpenBarriere();
+                break;
+            case Model.BarrierGate.BARRIERE_ENUM_STATE.CLOSE:
+                BarrierGateSingleton.Instance.CurrentBarrierGate.CloseBarrierGate();
+                break;
+        }
+
+    }
+}

@@ -1,0 +1,217 @@
+﻿@page "/BarrierGateEventPage";
+@using Singletons;
+@using Model;
+@rendermode InteractiveServer
+
+<style>
+
+	#bottom_form_add {
+	display: flex;
+	position: fixed;
+	bottom: 0;
+	height: 100px;
+	width: 100%;
+	background: grey;
+	left: 0px;
+	align-content: center;
+	}
+
+	#bottom_form_add > table {
+	width: 100%;
+	}
+
+	#bottom_form_add > table > tr > td {
+	text-align: center;
+	}
+
+	#calendar_event_list {
+	margin-bottom: 250px;
+	}
+</style>
+
+<h1>Listes des évenements sur - @BarrierGateSingleton.Instance.CurrentBarrierGate.Name</h1>
+
+<table id="calendar_event_list">
+	@foreach(CalendarEvent calendarEvent in BarrierGateSingleton.Instance.CurrentBarrierGate.CalendarEvents)
+	{
+		<tr>
+			<td>
+				<div class="card" style="width: 18rem;">
+					<div class="card-body">
+						<h5 class="card-title">@calendarEvent.Name</h5>
+						<a @onclick="@(() => ModifyIsClicked(calendarEvent))" data-bs-toggle="modal" data-bs-target="#exampleModal" href="/BarrierGateEventPage" class="btn btn-primary">Modifier</a>
+						<a @onclick="@(() => RemoveCalendarEventInJsonFile(calendarEvent))" href="/BarrierGateEventPage" class="btn btn-danger">Supprimmer</a>
+					</div>
+				</div>
+			</td>
+			<td>
+				@calendarEvent.Description
+			</td>
+		</tr>
+	}
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">
+					@if (BarrierGateSingleton.Instance.CurrentCalendarEvent != null)
+					{
+						@BarrierGateSingleton.Instance.CurrentCalendarEvent.Name
+					}
+					else
+					{
+						<text>Veuillez sélectionner une barrière</text>
+					}
+				</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<table>
+					<tr>
+						<td>Nom</td>
+						<td>
+							<input @bind-value="@modifiedCalendarEvent.Name" id="modify_ip_input" placeholder="je suis un nom" />
+						</td>
+					</tr>
+
+					<tr>
+						<td>Heure de début</td>
+						<td>
+							<input @bind-value="@modifiedCalendarEvent.StartTime_DateTime" type="time" placeholder="heure de début" />
+						</td>
+					</tr>
+					<tr>
+						<td>Date de début</td>
+						<td>
+							<InputDate @bind-value="@modifiedCalendarEvent.StartDate" id="modify_name_input" placeholder="Date de début" />
+						</td>
+					</tr>
+
+					<tr>
+						<td>Heure de fin</td>
+						<td>
+							<input @bind-value="@modifiedCalendarEvent.EndTime_DateTime" type="time" placeholder="heure de début" />
+						</td>
+					</tr>
+					<tr>
+						<td>Date de fin</td>
+						<td>
+							<InputDate @bind-value="@modifiedCalendarEvent.EndDate" id="modify_name_input" placeholder="Date de début" />
+						</td>
+					</tr>
+
+					<tr>
+						<td>Description</td>
+						<td>
+							<textarea @bind="@modifiedCalendarEvent.Description" placeholder="description">@modifiedCalendarEvent.Description</textarea>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button @onclick="@(() => ModifyConfirmation())" type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="bottom_form_add">
+	<table>
+		<tr>
+			<td>
+				<button @onclick="@(() => AddCalendarEventInJsonFile())" class="btn btn-primary">Add</button>
+			</td>
+			<td>
+				<input @bind-value="@calendarEventToAdd.Name" placeholder="nom" />
+			</td>
+
+			<td>
+				<input @bind-value="@calendarEventToAdd.StartTime_DateTime" type="time" placeholder="heure de début" />
+			</td>
+			<td>
+				<InputDate @bind-value="@calendarEventToAdd.StartDate" placeholder="Date de début" />
+			</td>
+
+			<td>
+				<input @bind-value="@calendarEventToAdd.EndTime_DateTime" type="time" placeholder="heure de début" />
+			</td>
+			<td>
+				<InputDate TValue="DateTime" @bind-value="@calendarEventToAdd.EndDate" EnableMinMax="true" Min="@calendarEventToAdd.StartDate" placeholder="Date de fin" />
+			</td>
+
+			<td>
+				<textarea @bind="@calendarEventToAdd.Description" placeholder="description">@calendarEventToAdd.Description</textarea>
+			</td>
+		</tr>
+	</table>
+</div>
+
+@code {
+	CalendarEvent calendarEventToAdd = new CalendarEvent();
+	CalendarEvent modifiedCalendarEvent = new CalendarEvent();
+
+	protected override void OnInitialized()
+	{
+		RefreshBarrierGateList();
+		base.OnInitialized();
+	}
+
+	protected async void RefreshBarrierGateList()
+	{
+		CalendarEvent ce = new CalendarEvent();
+		BarrierGateSingleton.Instance.CurrentBarrierGate.CalendarEvents = await ce.GetAllFromJsonFile(BarrierGateSingleton.Instance.CurrentBarrierGate);
+	}
+
+	protected async void AddCalendarEventInJsonFile()
+	{
+		await calendarEventToAdd.AddInJsonFile();
+		RefreshBarrierGateList();
+		calendarEventToAdd = new CalendarEvent();
+	}
+
+	protected async void RemoveCalendarEventInJsonFile(CalendarEvent calendar)
+	{
+		BarrierGateSingleton.Instance.CurrentCalendarEvent = calendar;
+		await BarrierGateSingleton.Instance.CurrentCalendarEvent.RemoveInJsonFile();
+		RefreshBarrierGateList();
+	}
+
+	protected void ModifyConfirmation()
+	{
+		CalendarEvent calendarEvent = new CalendarEvent
+		{
+			Id = modifiedCalendarEvent.Id,
+			Name = modifiedCalendarEvent.Name,
+			StartDate = modifiedCalendarEvent.StartDate,
+			EndDate = modifiedCalendarEvent.EndDate,
+			Description = modifiedCalendarEvent.Description,
+			StartTime = modifiedCalendarEvent.StartTime,
+			EndTime = modifiedCalendarEvent.EndTime,
+		};
+
+		if(!calendarEvent.IsValid())
+		{
+			return;
+		}
+
+		BarrierGateSingleton.Instance.CurrentCalendarEvent.ModifyInJsonFile(calendarEvent);
+		RefreshBarrierGateList();
+	}
+
+	protected void ModifyIsClicked(CalendarEvent calendarEvent)
+	{
+		BarrierGateSingleton.Instance.CurrentCalendarEvent = calendarEvent;
+
+		modifiedCalendarEvent.Id = calendarEvent.Id;
+		modifiedCalendarEvent.Name = calendarEvent.Name;
+		modifiedCalendarEvent.StartDate = calendarEvent.StartDate;
+		modifiedCalendarEvent.EndDate = calendarEvent.EndDate;
+		modifiedCalendarEvent.Description = calendarEvent.Description;
+		modifiedCalendarEvent.StartTime = calendarEvent.StartTime;
+		modifiedCalendarEvent.EndTime = calendarEvent.EndTime;
+	}
+}

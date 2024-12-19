@@ -2,39 +2,45 @@
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BarrierGateApi.Models
 {
-    public class CalendarEvent : JsonElement<CalendarEvent>
+    [Table("calendar_event")]
+    public class CalendarEvent : GestionnableElement
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
         [JsonProperty("start_date")]
         [JsonConverter(typeof(CustomDateTimeConverter))]
+        [Column("start_date")]
         public DateTime StartDate { get; set; }
+
         [JsonProperty("end_date")]
         [JsonConverter(typeof(CustomDateTimeConverter))]
+        [Column("end_date")]
         public DateTime EndDate { get; set; }
+
         [JsonProperty("description")]
+        [Column("description")]
         public string Description { get; set; }
 
 
         [JsonProperty("start_time")]
+        [Column("start_time")]
         public DateTime StartTime { get; set; }
+
         [JsonProperty("end_time")]
+        [Column("end_time")]
         public DateTime EndTime { get; set; }
 
         public CalendarEvent()
         {
             DateTime now = DateTime.Now;
-            this.Id = DateTime.Now.ToString();
             this.StartDate = now;
             this.EndDate = now;
         }
 
         public CalendarEvent(string name, DateTime startDate, DateTime endDate, string description = "")
         {
-            this.Id = DateTime.Now.ToString();
             this.Name = name;
             this.StartDate = startDate;
             this.EndDate = endDate;
@@ -51,7 +57,7 @@ namespace BarrierGateApi.Models
 
         public bool IsValid()
         {
-            if (this.Id is null || this.Id == String.Empty)
+            if (this.Id is null)
             { return false; }
 
             if (this.Name is null || this.Name == String.Empty)
@@ -63,84 +69,7 @@ namespace BarrierGateApi.Models
             return true;
         }
 
-        public override bool AddInJsonFile(object[] parents)
-        {
-            try
-            {
-                BarrierGate bg = new BarrierGate();
-                List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
-
-                BarrierGate currentBG = barrierGateFromJson.Where(x => x == parents[0] as BarrierGate).FirstOrDefault();
-                currentBG.CalendarEvents.Add(this);
-                string json = JsonConvert.SerializeObject(barrierGateFromJson);
-                FileSingleton.Instance.JsonFile = json;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-            return true;
-        }
-
-        public override bool RemoveInJsonFile(object[] parents = null)
-        {
-            try
-            {
-                BarrierGate bg = new BarrierGate();
-                List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
-                BarrierGate currentBarrierGate = barrierGateFromJson.Where(x => x == parents[0] as BarrierGate).FirstOrDefault();
-                CalendarEvent calendarEvent = currentBarrierGate.CalendarEvents.Where(x => x == this).FirstOrDefault();
-                currentBarrierGate.CalendarEvents.Remove(calendarEvent);
-                string json = JsonConvert.SerializeObject(barrierGateFromJson);
-                FileSingleton.Instance.JsonFile = json;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-
-            return true;
-        }
-
-        public override bool ModifyInJsonFile(CalendarEvent elementToUseToModified, object[] parents = null)
-        {
-            try
-            {
-                BarrierGate bg = new BarrierGate();
-                List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
-                BarrierGate barrierGateToEdit = barrierGateFromJson.Where(x => x == parents[0] as BarrierGate).FirstOrDefault();
-                CalendarEvent currentCalendarEvent = barrierGateToEdit.CalendarEvents.Where(x => x == this).FirstOrDefault();
-
-                currentCalendarEvent.Id = elementToUseToModified.Id;
-                currentCalendarEvent.StartDate = elementToUseToModified.StartDate;
-                currentCalendarEvent.EndDate = elementToUseToModified.EndDate;
-                currentCalendarEvent.Name = elementToUseToModified.Name;
-                currentCalendarEvent.Description = elementToUseToModified.Description;
-                currentCalendarEvent.StartTime = elementToUseToModified.StartTime;
-                currentCalendarEvent.EndTime = elementToUseToModified.EndTime;
-
-                string json = JsonConvert.SerializeObject(barrierGateFromJson);
-                FileSingleton.Instance.JsonFile = json;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-
-            return true;
-        }
-
-        public List<CalendarEvent>? GetAllFromJsonFile(BarrierGate barrierGate)
-        {
-            BarrierGate bg = new BarrierGate();
-            List<BarrierGate> barrierGateFromJson = bg.GetAllFromJsonFile();
-            BarrierGate currentBarrierGate = barrierGateFromJson.Where(x => x == barrierGate).FirstOrDefault();
-            return currentBarrierGate.CalendarEvents;
-        }
-
+        
         public static bool operator ==(CalendarEvent CA1, CalendarEvent CA2)
         {
             if (CA2 is null)

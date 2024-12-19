@@ -1,4 +1,6 @@
-﻿using BarrierGateApi.Models;
+﻿using BarrierGateApi.DB;
+using BarrierGateApi.DB.Context;
+using BarrierGateApi.Models;
 using BarrierGateApi.Singleton;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,8 +10,10 @@ namespace BarrierGateApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BarrierGateController : ControllerBase
+    public class BarrierGateController : ControllerGestionnableElements<BarrierGate>
     {
+        protected override Context<BarrierGate> database { get; set; } = Database.Instance.BarrierGateDB;
+
         [HttpGet(nameof(this.TurnOn))]
         public async void TurnOn(string baseAdress, double timeAlive = 0) 
         {
@@ -64,56 +68,6 @@ namespace BarrierGateApi.Controllers
                 Console.WriteLine(ex);
             }
             BarrierGateSingleton.Instance.CloseBarrierGate();
-        }
-
-        [HttpGet(nameof(this.GetAllFromJsonFile))]
-        public string GetAllFromJsonFile() 
-        {
-            return FileSingleton.Instance.JsonFile;
-        }
-
-        [HttpGet(nameof(this.AddInJsonFile))]
-        public bool AddInJsonFile(string barrierGateToAdd)
-        {
-            try
-            {
-                BarrierGate barrierGate = JsonConvert.DeserializeObject<BarrierGate>(barrierGateToAdd);
-                return barrierGate.AddInJsonFile();
-            }
-            catch (Exception ex) 
-            {
-                Console.WriteLine(ex);
-                return false;
-            }
-        }
-
-        [HttpGet(nameof(this.RemoveInJsonFile))]
-        public bool RemoveInJsonFile(string jsonOfBarrierGateToRemove)
-        {
-            try
-            {
-                BarrierGate barrierGate = JsonConvert.DeserializeObject<BarrierGate>(jsonOfBarrierGateToRemove);
-                return barrierGate.RemoveInJsonFile();
-            }
-            catch (Exception ex) 
-            {
-                return false;
-            }
-        }
-
-        [HttpGet(nameof(this.ModifyInJsonFile))]
-        public bool ModifyInJsonFile(string jsonOfBarrierGateToEdit, string jsonOfBarrierGateEdited)
-        {
-            try
-            {
-                BarrierGate barrierGate = JsonConvert.DeserializeObject<BarrierGate>(jsonOfBarrierGateToEdit);
-                BarrierGate modifiedBarrierGate = JsonConvert.DeserializeObject<BarrierGate>(jsonOfBarrierGateEdited);
-                return barrierGate.ModifyInJsonFile(modifiedBarrierGate);
-            }
-            catch (Exception ex) 
-            {
-                return false ;
-            }
         }
     }
 }

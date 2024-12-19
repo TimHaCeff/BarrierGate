@@ -2,27 +2,9 @@
 
 namespace BarrierGateApi.Singleton
 {
-    public class BarrierGateSingleton
+    public class BarrierGateSingleton : Singleton<BarrierGateSingleton>
     {
-        public static BarrierGateSingleton instance = null;
-        protected static readonly object threadSafeLocker = new object();
         private BarrierGateSingleton() { }
-        public static BarrierGateSingleton Instance
-        {
-            get
-            {
-                lock (threadSafeLocker)
-                {
-                    if (instance == null)
-                    {
-                        instance = new BarrierGateSingleton();
-                    }
-                    return instance;
-                }
-            }
-
-            set => instance = value;
-        }
 
         public HttpClient HttpClient { get; protected set; } = new HttpClient
         {

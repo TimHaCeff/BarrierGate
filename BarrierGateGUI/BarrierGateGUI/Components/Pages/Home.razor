@@ -56,7 +56,7 @@
     protected async void RefreshBarrierGateList()
     {
         BarrierGate bg = new BarrierGate();
-        BarrierGateSingleton.Instance.barrierGates = await bg.GetAllFromJsonFile();
+        BarrierGateSingleton.Instance.barrierGates = await bg.GetAll();
         this.StateHasChanged();
     }
 

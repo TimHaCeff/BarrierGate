@@ -132,29 +132,30 @@
     protected async void RefreshBarrierGateList()
     {
         BarrierGate bg = new BarrierGate();
-        BarrierGateSingleton.Instance.barrierGates = await bg.GetAllFromJsonFile();
+        BarrierGateSingleton.Instance.barrierGates = await bg.GetAll();
         this.StateHasChanged();
     }
 
     protected void ModifyIsClicked(BarrierGate currentBarrierGate)
     {
         BarrierGateSingleton.Instance.SetCurrentBarrierGate(currentBarrierGate);
-        modifiedBarrierGate.Ip = Singletons.BarrierGateSingleton.Instance.CurrentBarrierGate.Ip;
-        modifiedBarrierGate.Name = Singletons.BarrierGateSingleton.Instance.CurrentBarrierGate.Name;
-        modifiedBarrierGate.IsOpen = Singletons.BarrierGateSingleton.Instance.CurrentBarrierGate.IsOpen;
+        modifiedBarrierGate.Id = BarrierGateSingleton.Instance.CurrentBarrierGate.Id;
+        modifiedBarrierGate.Ip = BarrierGateSingleton.Instance.CurrentBarrierGate.Ip;
+        modifiedBarrierGate.Name = BarrierGateSingleton.Instance.CurrentBarrierGate.Name;
+        modifiedBarrierGate.IsOpen = BarrierGateSingleton.Instance.CurrentBarrierGate.IsOpen;
         RefreshBarrierGateList();
     }
 
     protected async void ModifyConfirmation()
     {
-        BarrierGate barrierGate = new BarrierGate(modifiedBarrierGate.Ip, modifiedBarrierGate.Name);
+        BarrierGate barrierGate = new BarrierGate(modifiedBarrierGate.Id, modifiedBarrierGate.Ip, modifiedBarrierGate.Name);
 
         if (!barrierGate.IsValid())
         {
             return;
         }
 
-        await BarrierGateSingleton.Instance.CurrentBarrierGate.ModifyInJsonFile(barrierGate);
+        await BarrierGateSingleton.Instance.CurrentBarrierGate.Update(barrierGate);
         RefreshBarrierGateList();
     }
 
@@ -164,7 +165,7 @@
         {
             return;
         }
-        await barrierGateToAdd.AddInJsonFile();
+        await barrierGateToAdd.Add();
         barrierGateToAdd = new BarrierGate();
         RefreshBarrierGateList();
     }
@@ -172,7 +173,7 @@
     protected async void RemoveIsClicked(BarrierGate barrierGate)
     {
         BarrierGateSingleton.Instance.SetCurrentBarrierGate(barrierGate);
-        await BarrierGateSingleton.Instance.CurrentBarrierGate.RemoveInJsonFile();
+        await BarrierGateSingleton.Instance.CurrentBarrierGate.Delete();
 
         RefreshBarrierGateList();
     }

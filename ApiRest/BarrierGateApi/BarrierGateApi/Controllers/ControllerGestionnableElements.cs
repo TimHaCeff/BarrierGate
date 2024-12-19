@@ -98,19 +98,19 @@ namespace BarrierGateApi.Controllers
         }
 
         [HttpGet(nameof(this.Update))]
-        public async Task<bool> Update(string json_to_edit)
+        public async Task<bool> Update(string json_edited)
         {
             try
             {
-                if (json_to_edit[0] == '[')
+                if (json_edited[0] == '[')
                 {
-                    List<T> listOfBG = JsonConvert.DeserializeObject<List<T>>(json_to_edit);
+                    List<T> listOfBG = JsonConvert.DeserializeObject<List<T>>(json_edited);
                     await database.Update(listOfBG);
                     return true;
                 }
                 else
                 {
-                    T baarrierGate = JsonConvert.DeserializeObject<T>(json_to_edit);
+                    T baarrierGate = JsonConvert.DeserializeObject<T>(json_edited);
                     await database.Update(baarrierGate);
                     return true;
                 }

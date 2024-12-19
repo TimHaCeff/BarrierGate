@@ -4,37 +4,37 @@ using System.Globalization;
 
 namespace BarrierGateGUI.Model
 {
-    public class CalendarEvent : JsonElement<CalendarEvent>
+    public class CalendarEvent : GestionnableElement<CalendarEvent>
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+
         [JsonProperty("start_date")]
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime StartDate { get; set; }
         [JsonProperty("end_date")]
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime EndDate { get; set; }
+
         [JsonProperty("description")]
         public string Description { get; set; }
 
-
-        [JsonProperty("start_time")]
+        [JsonProperty("strt_time")]
         public DateTime StartTime { get; set; }
         [JsonProperty("end_time")]
         public DateTime EndTime { get; set; }
 
 
+        [JsonIgnore]
+        protected override string gestionnableElementName { get; set; } = nameof(CalendarEvent);
+
         public CalendarEvent() 
         {
             DateTime now = DateTime.Now;
-            this.Id = DateTime.Now.ToString();
             this.StartDate = now;
             this.EndDate = now;
         }
 
         public CalendarEvent(string name, DateTime startDate, DateTime endDate, string description = "") 
         {
-            this.Id = DateTime.Now.ToString();
             this.Name = name;
             this.StartDate = startDate;
             this.EndDate = endDate;
@@ -43,84 +43,13 @@ namespace BarrierGateGUI.Model
 
         public bool IsValid()
         {
-            if (this.Id is null || this.Id == String.Empty)
+            if (this.Id is null)
             { return false; }
 
             if (this.Name is null || this.Name == String.Empty)
             { return false; }
 
             return true;
-        }
-
-        public async override Task<bool> AddInJsonFile()
-        {
-            try
-            {
-                string barrierGateParent = JsonConvert.SerializeObject(BarrierGateSingleton.Instance.CurrentBarrierGate);
-                string json = JsonConvert.SerializeObject(this);
-
-                string endpoint = $"/CalendarEvent/AddInJsonFile?barrierGateParent={barrierGateParent}&calendarEventToAdd={json}";
-                HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-            return true;
-        }
-
-        public async override Task<bool> RemoveInJsonFile()
-        {
-            try
-            {
-                string barrierGateParent = JsonConvert.SerializeObject(BarrierGateSingleton.Instance.CurrentBarrierGate);
-                string json = JsonConvert.SerializeObject(this);
-
-                string endpoint = $"/CalendarEvent/RemoveInJsonFile?barrierGateParent={barrierGateParent}&calendarEventToRemove={json}";
-                HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-
-            return true;
-        }
-
-        public async override Task<bool> ModifyInJsonFile(CalendarEvent elementModified)
-        {
-            try
-            {
-                string barrierGateParent = JsonConvert.SerializeObject(BarrierGateSingleton.Instance.CurrentBarrierGate);
-                string json = JsonConvert.SerializeObject(this);
-                string jsonOfEdited = JsonConvert.SerializeObject(elementModified);
-
-                string endpoint =
-                $"/CalendarEvent/EditInJsonFile?barrierGateParent=" +
-                $"{barrierGateParent}&calendarEventToEdit={json}&calendarEventEdited={jsonOfEdited}";
-                HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-
-            return true;
-        }
-
-        public async Task<List<CalendarEvent>?> GetAllFromJsonFile(BarrierGate barrierGate)
-        {
-            string barrierGateParent = JsonConvert.SerializeObject(barrierGate);
-            string json = JsonConvert.SerializeObject(this);
-
-            string endpoint = $"/CalendarEvent/GetAllFromOneBarrierGateFromJsonFile?barrierGateParent={barrierGateParent}";
-            HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);
-            string content = await response.Content.ReadAsStringAsync();
-            List<CalendarEvent>? calendarEvents = JsonConvert.DeserializeObject<List<CalendarEvent>>(content);
-            return calendarEvents;
         }
 
         public static bool operator ==(CalendarEvent CA1, CalendarEvent CA2)

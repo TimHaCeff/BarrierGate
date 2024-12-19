@@ -21,10 +21,18 @@ namespace BarrierGateApi.DB.Context
             }
         }
 
-        public async Task<List<T>> GetAll()
+        public async Task<List<T>?> GetAll()
         {
-            List<T> list = await this.context.ToListAsync();
-            return list;
+            try
+            {
+                List<T> list = await this.context.ToListAsync();
+                return list;
+            }
+            catch (Exception ex) 
+            {
+                Console.Write(ex.Message);
+            }
+            return new List<T>();
         }
 
         public async Task<T?> Get(int id) 
@@ -127,7 +135,8 @@ namespace BarrierGateApi.DB.Context
         {
             try
             {
-                this.context.Remove(obj);
+                T objInDb = await this.context.FindAsync(obj.Id);
+                this.context.Remove(objInDb);
                 await this.SaveChangesAsync();
                 return true;
             }
@@ -144,7 +153,8 @@ namespace BarrierGateApi.DB.Context
             {
                 foreach (T obj in objList)
                 {
-                    this.context.Remove(obj);
+                    T objInDb = await this.context.FindAsync(obj.Id);
+                    this.context.Remove(objInDb); ;
                 }
                 await this.SaveChangesAsync();
                 return true;

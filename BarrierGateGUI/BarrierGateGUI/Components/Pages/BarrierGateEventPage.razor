@@ -163,7 +163,7 @@
 	protected async void RefreshBarrierGateList()
 	{
 		CalendarEvent ce = new CalendarEvent();
-		BarrierGateSingleton.Instance.CurrentBarrierGate.CalendarEvents = await ce.GetAllFromJsonFile(BarrierGateSingleton.Instance.CurrentBarrierGate);
+		BarrierGateSingleton.Instance.CurrentBarrierGate.CalendarEvents = await ce.GetAll();
 		this.StateHasChanged();
 	}
 
@@ -173,7 +173,7 @@
 		{
 			return;
 		}
-		await calendarEventToAdd.AddInJsonFile();
+		await calendarEventToAdd.Add();
 		RefreshBarrierGateList();
 		calendarEventToAdd = new CalendarEvent();
 	}
@@ -181,7 +181,7 @@
 	protected async void RemoveCalendarEventInJsonFile(CalendarEvent calendar)
 	{
 		BarrierGateSingleton.Instance.CurrentCalendarEvent = calendar;
-		await BarrierGateSingleton.Instance.CurrentCalendarEvent.RemoveInJsonFile();
+		await BarrierGateSingleton.Instance.CurrentCalendarEvent.Delete();
 		RefreshBarrierGateList();
 	}
 
@@ -203,7 +203,7 @@
 			return;
 		}
 
-		await BarrierGateSingleton.Instance.CurrentCalendarEvent.ModifyInJsonFile(calendarEvent);
+		await BarrierGateSingleton.Instance.CurrentCalendarEvent.Update(calendarEvent);
 		RefreshBarrierGateList();
 	}
 

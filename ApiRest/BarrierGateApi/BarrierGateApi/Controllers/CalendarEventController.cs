@@ -10,7 +10,10 @@ namespace BarrierGateApi.Controllers
     [Route("[controller]")]
     public class CalendarEventController : ControllerGestionnableElements<CalendarEvent>
     {
-        protected override Context<CalendarEvent> database { get; set; } = Database.Instance.CalendarEventDB;
+        //protected override Context<CalendarEvent> database { get; set; } = Database.Instance.CalendarEventDB;
+        public CalendarEventController(Context context) : base(context)
+        {
+        }
     }
 }
 

@@ -20,6 +20,7 @@ namespace BarrierGateGUI.Model
             try
             {
                 string json = JsonConvert.SerializeObject(this);
+                Console.WriteLine(json);
 
                 string endpoint = $"/{gestionnableElementName}/Add?json_to_add={json}";
                 HttpResponseMessage response = await BarrierGateSingleton.Instance.GetHttpClienInstance().GetAsync(endpoint);

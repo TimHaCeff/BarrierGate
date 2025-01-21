@@ -33,9 +33,6 @@
                         <li >
                             <a @onclick="@(async() => await BarrierGateAction(barrierGate, BarrierGate.BARRIERE_ENUM_STATE.CLOSE))" class="dropdown-item" href="#">Fermer la barrière</a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="/BarrierGateEventPage">Programmer un évenement</a>
-                        </li>
                     </ul>
                 </div>
             </td>
@@ -46,14 +43,14 @@
 @code
 {
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        RefreshBarrierGateList();
+        await RefreshBarrierGateList();
 
         base.OnInitialized();
     }
 
-    protected async void RefreshBarrierGateList()
+    protected async Task RefreshBarrierGateList()
     {
         BarrierGate bg = new BarrierGate();
         BarrierGateSingleton.Instance.barrierGates = await bg.GetAll();

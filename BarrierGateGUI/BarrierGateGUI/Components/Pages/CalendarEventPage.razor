@@ -1,4 +1,4 @@
-﻿@page "/BarrierGateEventPage";
+﻿@page "/CalendarEventPage";
 @using Singletons;
 @using Model;
 @rendermode InteractiveServer
@@ -29,10 +29,8 @@
 	}
 </style>
 
-<h1>Listes des évenements sur - @BarrierGateSingleton.Instance.CurrentBarrierGate.Name</h1>
-
 <table id="calendar_event_list">
-	@foreach(CalendarEvent calendarEvent in BarrierGateSingleton.Instance.CurrentBarrierGate.CalendarEvents)
+	@foreach(CalendarEvent calendarEvent in CalendarEventSingleton.Instance.CalendarEvents)
 	{
 		<tr>
 			<td>
@@ -40,7 +38,7 @@
 					<div class="card-body">
 						<h5 class="card-title">@calendarEvent.Name</h5>
 						<a @onclick="@(() => ModifyIsClicked(calendarEvent))" data-bs-toggle="modal" data-bs-target="#exampleModal" href="/BarrierGateEventPage" class="btn btn-primary">Modifier</a>
-						<a @onclick="@(() => RemoveCalendarEventInJsonFile(calendarEvent))" href="/BarrierGateEventPage" class="btn btn-danger">Supprimmer</a>
+						<a @onclick="@(() => RemoveCalendarEvent(calendarEvent))" class="btn btn-danger">Supprimmer</a>
 					</div>
 				</div>
 			</td>
@@ -57,9 +55,9 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h1 class="modal-title fs-5" id="exampleModalLabel">
-					@if (BarrierGateSingleton.Instance.CurrentCalendarEvent != null)
+					@if (CalendarEventSingleton.Instance.CurrentCalendarEvent != null)
 					{
-						@BarrierGateSingleton.Instance.CurrentCalendarEvent.Name
+						@CalendarEventSingleton.Instance.CurrentCalendarEvent.Name
 					}
 					else
 					{
@@ -123,7 +121,7 @@
 	<table>
 		<tr>
 			<td>
-				<button @onclick="@(() => AddCalendarEventInJsonFile())" class="btn btn-primary">Add</button>
+				<button @onclick="@(() => AddCalendarEvent())" class="btn btn-primary">Add</button>
 			</td>
 			<td>
 				<input @bind-value="@calendarEventToAdd.Name" placeholder="nom" />
@@ -154,35 +152,38 @@
 	CalendarEvent calendarEventToAdd = new CalendarEvent();
 	CalendarEvent modifiedCalendarEvent = new CalendarEvent();
 
-	protected override void OnInitialized()
+	protected async override void OnInitialized()
 	{
-		RefreshBarrierGateList();
+		// CalendarEvent ce = new CalendarEvent();
+		// CalendarEventSingleton.Instance.CalendarEvents = await ce.GetAll();
+		await RefreshCalendarEvents();
+
 		base.OnInitialized();
 	}
 
-	protected async void RefreshBarrierGateList()
+	protected async Task RefreshCalendarEvents()
 	{
 		CalendarEvent ce = new CalendarEvent();
-		BarrierGateSingleton.Instance.CurrentBarrierGate.CalendarEvents = await ce.GetAll();
+		CalendarEventSingleton.Instance.CalendarEvents = await ce.GetAll();
 		this.StateHasChanged();
 	}
 
-	protected async void AddCalendarEventInJsonFile()
+	protected async void AddCalendarEvent()
 	{
 		if (!calendarEventToAdd.IsValid())
 		{
 			return;
 		}
 		await calendarEventToAdd.Add();
-		RefreshBarrierGateList();
+		await RefreshCalendarEvents();
 		calendarEventToAdd = new CalendarEvent();
 	}
 
-	protected async void RemoveCalendarEventInJsonFile(CalendarEvent calendar)
+	protected async void RemoveCalendarEvent(CalendarEvent calendar)
 	{
-		BarrierGateSingleton.Instance.CurrentCalendarEvent = calendar;
-		await BarrierGateSingleton.Instance.CurrentCalendarEvent.Delete();
-		RefreshBarrierGateList();
+		CalendarEventSingleton.Instance.CurrentCalendarEvent = calendar;
+		await CalendarEventSingleton.Instance.CurrentCalendarEvent.Delete();
+		await RefreshCalendarEvents();
 	}
 
 	protected async void ModifyConfirmation()
@@ -203,13 +204,13 @@
 			return;
 		}
 
-		await BarrierGateSingleton.Instance.CurrentCalendarEvent.Update(calendarEvent);
-		RefreshBarrierGateList();
+		await CalendarEventSingleton.Instance.CurrentCalendarEvent.Update(calendarEvent);
+		await RefreshCalendarEvents();
 	}
 
 	protected void ModifyIsClicked(CalendarEvent calendarEvent)
 	{
-		BarrierGateSingleton.Instance.CurrentCalendarEvent = calendarEvent;
+		CalendarEventSingleton.Instance.CurrentCalendarEvent = calendarEvent;
 
 		modifiedCalendarEvent.Id = calendarEvent.Id;
 		modifiedCalendarEvent.Name = calendarEvent.Name;

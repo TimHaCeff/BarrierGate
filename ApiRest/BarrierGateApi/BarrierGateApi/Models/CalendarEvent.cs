@@ -2,6 +2,7 @@
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BarrierGateApi.Models
@@ -19,9 +20,10 @@ namespace BarrierGateApi.Models
         [Column("end_date")]
         public DateTime EndDate { get; set; }
 
+        [DefaultValue("")]
         [JsonProperty("description")]
         [Column("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
 
         [JsonProperty("start_time")]

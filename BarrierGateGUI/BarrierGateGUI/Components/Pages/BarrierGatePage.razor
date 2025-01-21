@@ -1,4 +1,4 @@
-﻿@page "/GestionBarierGatePage";
+﻿@page "/BarrierGatePage";
 @rendermode InteractiveServer
 @using Newtonsoft.Json;
 @using Newtonsoft.Json.Linq;
@@ -40,7 +40,7 @@
 
 <h3>Gestion des barrières</h3>
 
-<p role="status">Current Barrier: @BarrierGateSingleton.Instance.CurrentBarrierGate?.Ip</p>
+<p role="status">Current Barrier: @BarrierGateSingleton.Instance.CurrentBarrierGate?.Id</p>
 
 <table id="barrier_gate_list">
     @foreach(BarrierGate barrierGate in BarrierGateSingleton.Instance.barrierGates)
@@ -51,7 +51,7 @@
                     <div class="card-body">
                         <h5 class="card-title">@barrierGate.Name</h5>
                         <a @onclick="@(() => ModifyIsClicked(barrierGate))" data-bs-toggle="modal" data-bs-target="#exampleModal" href="/GestionBarierGatePage" class="btn btn-primary">Modifier</a>
-                        <a @onclick="@(() => RemoveIsClicked(barrierGate))" href="/GestionBarierGatePage" class="btn btn-danger">Supprimmer</a>
+                        <a @onclick="@(() => RemoveIsClicked(barrierGate))" class="btn btn-danger">Supprimmer</a>
                     </div>
                 </div>
             </td>
@@ -122,28 +122,28 @@
     protected BarrierGate modifiedBarrierGate = new BarrierGate();
     protected BarrierGate barrierGateToAdd = new BarrierGate();
 
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        RefreshBarrierGateList();
+        await RefreshBarrierGateList();
 
         base.OnInitialized();
     }
 
-    protected async void RefreshBarrierGateList()
+    protected async Task RefreshBarrierGateList()
     {
         BarrierGate bg = new BarrierGate();
         BarrierGateSingleton.Instance.barrierGates = await bg.GetAll();
         this.StateHasChanged();
     }
 
-    protected void ModifyIsClicked(BarrierGate currentBarrierGate)
+    protected async void ModifyIsClicked(BarrierGate currentBarrierGate)
     {
         BarrierGateSingleton.Instance.SetCurrentBarrierGate(currentBarrierGate);
         modifiedBarrierGate.Id = BarrierGateSingleton.Instance.CurrentBarrierGate.Id;
         modifiedBarrierGate.Ip = BarrierGateSingleton.Instance.CurrentBarrierGate.Ip;
         modifiedBarrierGate.Name = BarrierGateSingleton.Instance.CurrentBarrierGate.Name;
         modifiedBarrierGate.IsOpen = BarrierGateSingleton.Instance.CurrentBarrierGate.IsOpen;
-        RefreshBarrierGateList();
+        await RefreshBarrierGateList();
     }
 
     protected async void ModifyConfirmation()
@@ -156,7 +156,7 @@
         }
 
         await BarrierGateSingleton.Instance.CurrentBarrierGate.Update(barrierGate);
-        RefreshBarrierGateList();
+        await RefreshBarrierGateList();
     }
 
     protected async void AddBarrierGateInJsonFile()
@@ -167,7 +167,7 @@
         }
         await barrierGateToAdd.Add();
         barrierGateToAdd = new BarrierGate();
-        RefreshBarrierGateList();
+        await RefreshBarrierGateList();
     }
 
     protected async void RemoveIsClicked(BarrierGate barrierGate)
@@ -175,6 +175,6 @@
         BarrierGateSingleton.Instance.SetCurrentBarrierGate(barrierGate);
         await BarrierGateSingleton.Instance.CurrentBarrierGate.Delete();
 
-        RefreshBarrierGateList();
+        await RefreshBarrierGateList();
     }
 }

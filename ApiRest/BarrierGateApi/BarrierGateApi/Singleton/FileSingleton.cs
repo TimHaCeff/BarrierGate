@@ -6,7 +6,7 @@
 
         protected string lastAvailableJsonFile { get; set; } = string.Empty;
 
-        public string JsonFilePath { get; set; } = ConfigSingleton.Instance.ConfigParam.JsonPath;
+        public string JsonFilePath { get; set; } = ConfigSingleton.Instance.ConfigParam.SQLitePath;
 
         public string JsonFile
         {

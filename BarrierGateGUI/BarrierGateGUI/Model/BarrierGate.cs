@@ -13,9 +13,6 @@ namespace BarrierGateGUI.Model
         [JsonProperty("is_open")]
         public bool IsOpen { get; set; }
 
-        [JsonProperty("calendar_events")]
-        public List<CalendarEvent> CalendarEvents { get; set; } = new List<CalendarEvent>();
-
 
         [JsonIgnore]
         protected override string gestionnableElementName { get; set; } = nameof(BarrierGate);
@@ -64,9 +61,6 @@ namespace BarrierGateGUI.Model
 
         public bool IsValid() 
         {
-            if (this.Id is null)
-            { return false; }
-
             if (this.Ip is null || this.Ip == String.Empty)
             { return false; }
 

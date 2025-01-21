@@ -7,7 +7,7 @@ namespace BarrierGateGUI.Singletons
         private BarrierGateSingleton() { }
 
         public BarrierGate CurrentBarrierGate { get; set; } = new BarrierGate();
-        public CalendarEvent CurrentCalendarEvent { get; set; } = new CalendarEvent();
+        //public CalendarEvent CurrentCalendarEvent { get; set; } = new CalendarEvent();
 
         public List<BarrierGate> barrierGates { get; set; } = new List<BarrierGate>();
 

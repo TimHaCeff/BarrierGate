@@ -1,4 +1,5 @@
-﻿using BarrierGateApi.Models;
+﻿using BarrierGateApi.Controllers;
+using BarrierGateApi.Models;
 
 namespace BarrierGateApi.Singleton
 {
@@ -11,34 +12,39 @@ namespace BarrierGateApi.Singleton
             BaseAddress = new Uri("http://157.26.121.88"),
         };
 
+        protected BarrierGateController barrierGateController { get; set; } = new BarrierGateController();
+
         protected const float DEFAULT_OPEN_TIME = 20;
 
 
         public async void OpenBarrierGate(bool stayOpen = false)
         {
-            string request;
-            if (stayOpen) 
-            {
-                request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:false}}";
-            }
-            else 
-            {
-                request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:true, auto_off_delay:{DEFAULT_OPEN_TIME}}}";
-            }
+            //string request;
+            //if (stayOpen) 
+            //{
+            //    request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:false}}";
+            //}
+            //else 
+            //{
+            //    request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:true, auto_off_delay:{DEFAULT_OPEN_TIME}}}";
+            //}
 
-            HttpResponseMessage? setConfigResponse = await TryGetAsync(request);
-            HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=true");
+            //HttpResponseMessage? setConfigResponse = await TryGetAsync(request);
+            //HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=true");
+            barrierGateController.OpenBarrierGate(TryGetAsync, stayOpen);
         }
         public async void OpenBarrierGate(float seconds)
         {
-            string request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:true, auto_off_delay:{seconds}}}";
-            HttpResponseMessage? setConfigResponse = await TryGetAsync(request);
-            HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=true");
+            //string request = $"/rpc/Switch.SetConfig?id=0&config={{auto_off:true, auto_off_delay:{seconds}}}";
+            //HttpResponseMessage? setConfigResponse = await TryGetAsync(request);
+            //HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=true");
+            barrierGateController.OpenBarrierGate(TryGetAsync, seconds);
         }
 
         public async void CloseBarrierGate() 
         {
-            HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=false");
+            //HttpResponseMessage? repsonse = await TryGetAsync($"/rpc/Switch.Set?id=0&on=false");
+            barrierGateController.CloseBarrierGate(TryGetAsync);
         }
 
         public async void CreateSchedule(CalendarEvent calendarEvent) 
@@ -47,7 +53,7 @@ namespace BarrierGateApi.Singleton
             string sParams = "* * * * * *";
         }
 
-        protected async Task<HttpResponseMessage?>? TryGetAsync(string endPoint)
+        public async Task<HttpResponseMessage?>? TryGetAsync(string endPoint)
         {
             try
             {
@@ -56,6 +62,7 @@ namespace BarrierGateApi.Singleton
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.WriteLine($"{HttpClient.BaseAddress}{endPoint}");
                 return null;
             }
         }

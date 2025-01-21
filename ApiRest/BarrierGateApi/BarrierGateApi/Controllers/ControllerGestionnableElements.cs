@@ -1,5 +1,6 @@
 ﻿using BarrierGateApi.DB;
 using BarrierGateApi.DB.Context;
+using BarrierGateApi.Interfaces;
 using BarrierGateApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,14 +9,19 @@ namespace BarrierGateApi.Controllers
 {
     public abstract class ControllerGestionnableElements<T> : ControllerBase where T : GestionnableElement
     {
-        protected abstract Context<T> database { get; set; }
+        private readonly Context _context;
+
+        public ControllerGestionnableElements(Context context)
+        {
+            _context = context;
+        }
 
         [HttpGet(nameof(this.Get))]
         public async Task<string> Get(int id)
         {
             try
             {
-                T bg = await database.Get(id);
+                T bg = await ((IDbBasicActions<T>)_context).Get(_context.ReturnDBSet<T>(), id);
                 return JsonConvert.SerializeObject(bg);
             }
             catch (Exception ex)
@@ -28,7 +34,7 @@ namespace BarrierGateApi.Controllers
         [HttpGet(nameof(this.GetAll))]
         public async Task<string> GetAll()
         {
-            List<T> bg = await database.GetAll();
+            List<T> bg = await ((IDbBasicActions<T>)_context).GetAll(_context.ReturnDBSet<T>());
             return JsonConvert.SerializeObject(bg);
         }
 
@@ -39,14 +45,16 @@ namespace BarrierGateApi.Controllers
             {
                 if (json_to_add[0] == '[')
                 {
-                    List<T> listOfBG = JsonConvert.DeserializeObject<List<T>>(json_to_add);
-                    await database.Add(listOfBG);
+                    List<T> listOfObj = JsonConvert.DeserializeObject<List<T>>(json_to_add);
+                    await ((IDbBasicActions<T>)_context).Add(_context.ReturnDBSet<T>(), listOfObj);
+                    await _context.Save();
                     return true;
                 }
                 else
                 {
-                    T baarrierGate = JsonConvert.DeserializeObject<T>(json_to_add);
-                    await database.Add(baarrierGate);
+                    T obj = JsonConvert.DeserializeObject<T>(json_to_add);
+                    await ((IDbBasicActions<T>)_context).Add(_context.ReturnDBSet<T>(), obj);
+                    await _context.Save();
                     return true;
                 }
             }
@@ -64,14 +72,16 @@ namespace BarrierGateApi.Controllers
             {
                 if (json_to_delete[0] == '[')
                 {
-                    List<T> listOfBG = JsonConvert.DeserializeObject<List<T>>(json_to_delete);
-                    await database.Delete(listOfBG);
+                    List<T> listOfObj = JsonConvert.DeserializeObject<List<T>>(json_to_delete);
+                    await ((IDbBasicActions<T>)_context).Delete(_context.ReturnDBSet<T>(), listOfObj);
+                    await _context.Save();
                     return true;
                 }
                 else
                 {
-                    T baarrierGate = JsonConvert.DeserializeObject<T>(json_to_delete);
-                    await database.Delete(baarrierGate);
+                    T obj = JsonConvert.DeserializeObject<T>(json_to_delete);
+                    await ((IDbBasicActions<T>)_context).Delete(_context.ReturnDBSet<T>(), obj);
+                    await _context.Save();
                     return true;
                 }
             }
@@ -87,7 +97,8 @@ namespace BarrierGateApi.Controllers
         {
             try
             {
-                await database.DeleteAll();
+                await ((IDbBasicActions<T>)_context).DeleteAll(_context.ReturnDBSet<T>());
+                await _context.Save();
                 return true;
             }
             catch (Exception ex)
@@ -104,14 +115,16 @@ namespace BarrierGateApi.Controllers
             {
                 if (json_edited[0] == '[')
                 {
-                    List<T> listOfBG = JsonConvert.DeserializeObject<List<T>>(json_edited);
-                    await database.Update(listOfBG);
+                    List<T> listOfObj = JsonConvert.DeserializeObject<List<T>>(json_edited);
+                    await ((IDbBasicActions<T>)_context).Update(_context.ReturnDBSet<T>(), listOfObj);
+                    await _context.Save();
                     return true;
                 }
                 else
                 {
-                    T baarrierGate = JsonConvert.DeserializeObject<T>(json_edited);
-                    await database.Update(baarrierGate);
+                    T obj = JsonConvert.DeserializeObject<T>(json_edited);
+                    await ((IDbBasicActions<T>)_context).Update(_context.ReturnDBSet<T>(), obj);
+                    await _context.Save();
                     return true;
                 }
             }

@@ -1,5 +1,6 @@
 ﻿using BarrierGateGUI.Singletons;
 using Newtonsoft.Json;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace BarrierGateGUI.Model
@@ -14,8 +15,9 @@ namespace BarrierGateGUI.Model
         [JsonConverter(typeof(CustomDateTimeConverter))]
         public DateTime EndDate { get; set; }
 
+        [DefaultValue("")]
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [JsonProperty("strt_time")]
         public DateTime StartTime { get; set; }
@@ -43,9 +45,6 @@ namespace BarrierGateGUI.Model
 
         public bool IsValid()
         {
-            if (this.Id is null)
-            { return false; }
-
             if (this.Name is null || this.Name == String.Empty)
             { return false; }
 

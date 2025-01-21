@@ -9,9 +9,9 @@ namespace BarrierGateApi.DB
     {
         private Database() { }
 
-        public Context<CalendarEvent> CalendarEventDB { get; set; } 
-            = new Context<CalendarEvent>(sqliteFilePath: ConfigSingleton.Instance.ConfigParam.JsonPath);
-        public Context<BarrierGate> BarrierGateDB {  get; set; } 
-            = new Context<BarrierGate>(sqliteFilePath: ConfigSingleton.Instance.ConfigParam.JsonPath);
+        //public Context<CalendarEvent> CalendarEventDB { get; set; } 
+        //    = new Context<CalendarEvent>(sqliteFilePath: ConfigSingleton.Instance.ConfigParam.JsonPath);
+        //public Context<BarrierGate> BarrierGateDB {  get; set; } 
+        //    = new Context<BarrierGate>(sqliteFilePath: ConfigSingleton.Instance.ConfigParam.JsonPath);
     }
 }
